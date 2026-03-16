@@ -1,45 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:getx_prep/home_page.dart';
 
-void main(){
+void main() {
   runApp(const MyApp());
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  GetMaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF2E7D32),
+          brightness: Brightness.light,
+        ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.green,
           elevation: 0,
           centerTitle: true,
-          iconTheme: IconThemeData(
-            size: 24,
-            color: Colors.white
+          scrolledUnderElevation: 2,
+        ),
+        cardTheme: CardTheme(
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          titleTextStyle: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           ),
         ),
         floatingActionButtonTheme: const FloatingActionButtonThemeData(
-          backgroundColor: Colors.green,
-          
+          elevation: 4,
         ),
-        buttonBarTheme: const ButtonBarThemeData(
-          
-        ),
-        primaryColor: Colors.green,
-        primarySwatch: Colors.green,
         sliderTheme: const SliderThemeData(
-          thumbColor: Colors.green,
-          activeTrackColor: Colors.green
-        )
+          trackHeight: 4,
+        ),
       ),
       home: const Homepage(),
     );

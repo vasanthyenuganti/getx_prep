@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
@@ -10,43 +8,167 @@ class ColorShadepage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ColorShadeController colorShadeController=Get.put(ColorShadeController());
+    final ColorShadeController ctrl = Get.put(ColorShadeController());
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text("SHADE"),),
-      body:  Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Obx(() => Container(
-            constraints: const BoxConstraints(maxHeight: 100,minWidth: 300,maxWidth: 350),
-            color: Colors.red.withOpacity(colorShadeController.opacity.value),
-          )),
-          Obx(() => Container(
-            constraints: const BoxConstraints(maxHeight: 100,minWidth: 300,maxWidth: 350),
-            color: Colors.green.withOpacity(colorShadeController.opacity.value),
-          )),
-          Obx(() => Container(
-            constraints: const BoxConstraints(maxHeight: 100,minWidth: 300,maxWidth: 350),
-            color: Colors.yellow.withOpacity(colorShadeController.opacity.value),
-          )),
-          const SizedBox(
-            height: 100,
-          ),
-          Obx(() => Slider(value: colorShadeController.opacity.value, onChanged: (value){
-            colorShadeController.getUpdate(value);
-          }),),
-
-          Obx(() => RangeSlider(
-            min: 1.0,
-            max: 100.0,
-            values: RangeValues(colorShadeController.start.value, colorShadeController.end.value), onChanged: (RangeValues rangeValues){
-            colorShadeController.getRange(rangeValues);
-            },
-          )),
-
-          Obx(() => Text('(${colorShadeController.start.value.toInt()} , ${colorShadeController.end.value.toInt()})'))
-          
-        ]
+      appBar: AppBar(title: const Text('Color Shade')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Opacity',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    _ColorBlock(ctrl: ctrl, color: Colors.red, label: 'Red'),
+                    const SizedBox(height: 8),
+                    _ColorBlock(
+                        ctrl: ctrl, color: Colors.green, label: 'Green'),
+                    const SizedBox(height: 8),
+                    _ColorBlock(
+                        ctrl: ctrl, color: Colors.amber, label: 'Amber'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Opacity',
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        Obx(() => Text(
+                              '${(ctrl.opacity.value * 100).toInt()}%',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(color: scheme.primary),
+                            )),
+                      ],
+                    ),
+                    Obx(() => Slider(
+                          value: ctrl.opacity.value,
+                          onChanged: ctrl.getUpdate,
+                        )),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Range',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 12),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Select Range',
+                          style: Theme.of(context).textTheme.labelLarge,
+                        ),
+                        Obx(() => Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: scheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                '${ctrl.start.value.toInt()} – ${ctrl.end.value.toInt()}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelMedium
+                                    ?.copyWith(
+                                        color: scheme.onPrimaryContainer),
+                              ),
+                            )),
+                      ],
+                    ),
+                    Obx(() => RangeSlider(
+                          min: 1.0,
+                          max: 100.0,
+                          values: RangeValues(
+                              ctrl.start.value, ctrl.end.value),
+                          onChanged: ctrl.getRange,
+                        )),
+                    Obx(() => Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('${ctrl.start.value.toInt()}',
+                                style: Theme.of(context).textTheme.bodySmall),
+                            Text('${ctrl.end.value.toInt()}',
+                                style: Theme.of(context).textTheme.bodySmall),
+                          ],
+                        )),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _ColorBlock extends StatelessWidget {
+  final ColorShadeController ctrl;
+  final Color color;
+  final String label;
+
+  const _ColorBlock(
+      {required this.ctrl, required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 52,
+          child: Text(label,
+              style: Theme.of(context).textTheme.bodySmall),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Obx(() => AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  height: 48,
+                  color: color.withOpacity(ctrl.opacity.value),
+                )),
+          ),
+        ),
+      ],
     );
   }
 }
